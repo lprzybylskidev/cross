@@ -1,196 +1,300 @@
-# 🚀 Cross App (Laravel Project)
+# cross
 
-## 🧭 Spis treści
+## Spis treści
 
--   [Opis aplikacji (PL)](#-opis-aplikacji-pl)
--   [Środowisko developerskie (PL)](#️-środowisko-developerskie-pl)
--   [Przydatne komendy (PL)](#-przydatne-komendy-pl)
--   [Tech Stack](#-tech-stack)
-
----
-
-## 📌 Opis aplikacji (PL)
-
-_Tutaj w przyszłości dodasz opis działania aplikacji, jej funkcjonalności, architekturę, diagramy itp._
-
----
-
-## ⚙️ Środowisko developerskie (PL)
-
-### 🧱 Wymagania wstępne
-
--   Docker Desktop (Windows/Mac) lub Docker + Docker Compose (Linux)
--   Visual Studio Code + rozszerzenie **Dev Containers**
--   Klucz SSH dla GitHub (generowany **wewnątrz kontenera**)
+1. [Aplikacja](#aplikacja)
+2. [Środowisko developerskie](#środowisko-developerskie)
+    1. [Stos technologiczny](#1-stos-technologiczny)
+    2. [Wymagania](#2-wymagania)
+    3. [Instalacja i uruchomienie — krok po kroku](#3-instalacja-i-uruchomienie--krok-po-kroku)
+        - [3.1. Klonowanie repozytorium](#31-klonowanie-repozytorium)
+        - [3.2. Uruchomienie środowiska](#32-uruchomienie-środowiska)
+        - [3.3. Konfiguracja Git i klucze SSH](#33-konfiguracja-git-i-klucze-ssh)
+        - [3.4. Instalacja zależności i konfiguracja aplikacji](#34-instalacja-zależności-i-konfiguracja-aplikacji)
+    4. [Często używane komendy Laravel](#4-często-używane-komendy-laravel)
+    5. [Przydatne komendy Docker](#5-przydatne-komendy-docker)
+    6. [Baza danych i narzędzia](#6-baza-danych-i-narzędzia)
+    7. [Dev Container w Visual Studio Code](#7-dev-container-w-visual-studio-code)
+    8. [Rozwiązywanie problemów (FAQ)](#8-rozwiązywanie-problemów-faq)
+    9. [Struktura katalogów](#9-struktura-katalogów)
 
 ---
 
-### 🧩 Instalacja krok po kroku
+# APLIKACJA
 
-1️⃣ **Sklonuj repozytorium**
+**cross** to aplikacja przeznaczona dla firm windykacyjnych, wspierająca kompleksowe zarządzanie wierzytelnościami.  
+System umożliwia automatyzację procesów związanych z obsługą spraw, monitorowaniem płatności, komunikacją z dłużnikami oraz raportowaniem działań.  
+Projekt rozwijany jest w oparciu o framework **Laravel**, zapewniając wysoką skalowalność i możliwość łatwej integracji z systemami zewnętrznymi.
+
+---
+
+# ŚRODOWISKO DEVELOPERSKIE
+
+## 1. Stos technologiczny
+
+| Kontener / Alias                   | Usługa / Cel                     | Port(y)            | Dostęp przez przeglądarkę                                          | Dane logowania / Uwagi                         |
+| ---------------------------------- | -------------------------------- | ------------------ | ------------------------------------------------------------------ | ---------------------------------------------- |
+| **cross_app**                      | Laravel (PHP-FPM + Nginx)        | 8181:80, 5173:5173 | [http://localhost:8181](http://localhost:8181) – aplikacja Laravel | login: `admin@cross.com`, hasło: `password`    |
+| **cross_admin** _(alias logiczny)_ | Panel administracyjny (Filament) | —                  | [http://localhost:8181/admin](http://localhost:8181/admin)         | login: `admin@cross.com`, hasło: `password`    |
+| **cross_postgres**                 | Baza danych PostgreSQL           | 5432:5432          | —                                                                  | login: `cross`, hasło: `password`, db: `cross` |
+| **cross_redis**                    | Redis (cache, kolejki, sesje)    | 6379:6379          | —                                                                  | login: `cross`, hasło: `password`              |
+| **cross_mailpit**                  | SMTP + podgląd e-maili           | 8025:8025          | [http://localhost:8025](http://localhost:8025)                     | Brak logowania                                 |
+| **cross_pgadmin**                  | GUI do PostgreSQL                | 5050:5050          | [http://localhost:5050](http://localhost:5050)                     | email: `admin@admin.com`, hasło: `admin`       |
+| **cross_redisinsight**             | GUI do Redisa                    | 8081:8081          | [http://localhost:8081](http://localhost:8081)                     | Brak logowania                                 |
+| **cross_elasticsearch**            | Elasticsearch                    | 9200:9200          | —                                                                  | login: `elastic`, hasło: `password`            |
+| **cross_kibana**                   | GUI do Elasticsearch             | 5601:5601          | [http://localhost:5601](http://localhost:5601)                     | Brak logowania                                 |
+
+---
+
+## 2. Wymagania
+
+-   Windows 10/11, macOS lub Linux.
+-   Zainstalowany **Docker Desktop** lub Docker + Docker Compose.
+-   **Visual Studio Code** (zalecane) z rozszerzeniem _Dev Containers_.
+-   Konto GitHub.
+
+---
+
+## 3. Instalacja i uruchomienie — krok po kroku
+
+Poniżej oznaczenia kontekstów wykonywania komend:
+
+-   **[HOST]** – komendy uruchamiane w terminalu systemowym (poza kontenerami).
+-   **[APP]** – komendy uruchamiane wewnątrz kontenera `cross_app`.  
+    _(Można je wydawać bezpośrednio z terminala w Visual Studio Code po wejściu do Dev Containera.)_
+-   **[POSTGRES]**, **[REDIS]**, **[KIBANA]**, **[PGADMIN]**, **[MAILPIT]**, **[REDISINSIGHT]** – komendy dla konkretnych kontenerów.
+
+Wejście do kontenerów (skróty do najczęstszych):
 
 ```bash
-git clone git@github.com:twoje-repo/cross.git
+# [HOST]
+docker exec -it cross_app bash         # [APP] – aplikacja Laravel
+docker exec -it cross_postgres bash    # [POSTGRES] – baza danych
+docker exec -it cross_redis bash       # [REDIS] – cache/kolejki
+docker exec -it cross_kibana bash      # [KIBANA] – GUI do Elasticsearch
+docker exec -it cross_pgadmin bash     # [PGADMIN] – panel PostgreSQL
+docker exec -it cross_mailpit bash     # [MAILPIT] – testowy SMTP
+docker exec -it cross_redisinsight bash # [REDISINSIGHT] – GUI Redis
+```
+
+### 3.1. Klonowanie repozytorium
+
+```bash
+# [HOST]
+git clone git@github.com:lprzybylskidev/cross.git
 cd cross
 ```
 
-2️⃣ **Uruchom kontenery**
+### 3.2. Uruchomienie środowiska
 
 ```bash
+# [HOST]
 docker compose up -d --build
+docker compose ps
 ```
 
-3️⃣ **Wejdź do kontenera aplikacji**
+### 3.3. Konfiguracja Git i klucze SSH
+
+Na tym etapie zalecane jest wykonywanie komend **[APP]** z terminala w Visual Studio Code.  
+Aby połączyć się z Dev Containerem:
+
+1. Otwórz folder projektu `cross` w VS Code.
+2. Jeśli pojawi się komunikat „Reopen in Container?” — wybierz **Reopen in Container**.
+3. Jeśli komunikat się nie pojawi: naciśnij **F1**, wpisz „Dev Containers: Reopen in Container” i potwierdź Enterem.
+4. Po połączeniu z Dev Containerem możesz wykonywać wszystkie komendy oznaczone jako **[APP]** z terminala w Visual Studio Code.
+
+#### 3.3.1. Generowanie klucza SSH
 
 ```bash
-docker exec -it cross_app bash
-```
-
-4️⃣ **Skonfiguruj GIT**
-
-```bash
-git config --global user.name "Twoje Imię"
-git config --global user.email "twojemail@domena.com"
-```
-
-5️⃣ **Wygeneruj nowy klucz SSH i dodaj do GitHub**
-
-```bash
-ssh-keygen -t ed25519 -C "admin@cross.com"
+# [APP]
+ssh-keygen -t ed25519 -C "twoj_email@domena.com"
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_ed25519
+echo ""
+echo "=================== TO SKOPIUJ I WYŚLIJ ADMINISTRATOROWI ==================="
 cat ~/.ssh/id_ed25519.pub
+echo "==========================================================================="
+echo ""
 ```
 
-6️⃣ **Skonfiguruj Laravel i bazę**
+#### 3.3.2. Konfiguracja Git użytkownika
 
 ```bash
-cp .env.example .env
+# [APP]
+git config --global user.name "Imię Nazwisko"
+git config --global user.email "twoj_email@domena.com"
+```
+
+#### 3.3.3. Ustawienie repozytorium zdalnego
+
+```bash
+# [APP]
+git remote set-url origin git@github.com:lprzybylskidev/cross.git
+```
+
+### 3.4. Instalacja zależności i konfiguracja aplikacji
+
+```bash
+# [APP]
 composer install
+cp .env.example .env
 php artisan key:generate
-php artisan migrate:fresh --seed
-```
-
-7️⃣ **Uruchom frontend (Vite)**
-
-```bash
-npm install
+npm ci || npm install
+php artisan migrate --seed
 npm run dev
 ```
 
 ---
 
-### 🔐 Logowanie / Dostępy
+## 4. Często używane komendy Laravel
 
-| Usługa                               | URL                                                                | Dane logowania             |
-| ------------------------------------ | ------------------------------------------------------------------ | -------------------------- |
-| **Aplikacja (Laravel)**              | [http://localhost:8181](http://localhost:8181)                     | admin@cross.com / password |
-| **Panel administracyjny (Filament)** | [http://localhost:8181/admin](http://localhost:8181/admin)         | admin@cross.com / password |
-| **Laravel Telescope**                | [http://localhost:8181/telescope](http://localhost:8181/telescope) | —                          |
-| **Vite Dev Server**                  | [http://localhost:5173](http://localhost:5173)                     | —                          |
-| **Mailpit (SMTP/UI)**                | [http://localhost:8025](http://localhost:8025)                     | SMTP: `localhost:1025`     |
-| **RedisInsight**                     | [http://localhost:5540](http://localhost:5540)                     | —                          |
-| **pgAdmin**                          | [http://localhost:5050](http://localhost:5050)                     | admin@cross.com / password |
-| **Kibana**                           | [http://localhost:5601](http://localhost:5601)                     | —                          |
-| **Elasticsearch**                    | [http://localhost:9200](http://localhost:9200)                     | —                          |
+```bash
+# [APP]
+php artisan config:clear        # Czyści cache konfiguracji
+php artisan cache:clear         # Czyści cache aplikacji
+php artisan route:clear         # Czyści cache tras
+php artisan view:clear          # Czyści cache widoków
+php artisan optimize:clear      # Czyści wszystkie cache Laravela
+php artisan migrate             # Uruchamia migracje bazy danych
+php artisan migrate:fresh       # Czyści i ponownie uruchamia migracje
+php artisan db:seed             # Uruchamia seedy danych testowych
+php artisan queue:work          # Uruchamia przetwarzanie kolejki
+php artisan schedule:run        # Wykonuje zaplanowane zadania
+php artisan storage:link        # Tworzy symlink do storage/public
+php artisan route:list          # Wyświetla listę tras
+php artisan tinker              # Otwiera interaktywną konsolę aplikacji
+```
 
 ---
 
-## 🧰 Przydatne komendy (PL)
+## 5. Przydatne komendy Docker
 
-### Wejście do kontenerów
-
-```bash
-# Aplikacja Laravel (PHP)
-docker exec -it cross_app bash
-
-# Baza danych PostgreSQL
-docker exec -it cross_postgres bash
-
-# Redis
-docker exec -it cross_redis bash
-
-# RedisInsight
-docker exec -it cross_redisinsight bash
-
-# Mailpit
-docker exec -it cross_mailpit bash
-
-# Elasticsearch
-docker exec -it cross_elasticsearch bash
-
-# Kibana
-docker exec -it cross_kibana bash
-
-# pgAdmin
-docker exec -it cross_pgadmin bash
-```
-
-### Ogólne komendy Dockera
+### 5.1. Informacje i logi
 
 ```bash
-# Lista działających kontenerów
+# [HOST]
 docker ps
-
-# Ładna tabelka z nazwami, statusem i portami
-docker ps --format "table {{.Names}}	{{.Status}}	{{.Ports}}"
-
-# Restart wszystkich kontenerów
-docker compose restart
-
-# Zatrzymanie środowiska
-docker compose down
-
-# Zatrzymanie i usunięcie kontenerów oraz wolumenów
-docker compose down -v
-
-# Przebudowa środowiska od zera
-docker compose up -d --build
-
-# Sprawdzenie logów kontenera
+docker compose ps
+docker logs cross_app
 docker logs -f cross_app
-
-# Sprawdzenie zdrowia kontenerów
-docker inspect --format='{{json .State.Health}}' cross_app | jq
-
-# Usunięcie nieużywanych obrazów i wolumenów
-docker system prune -af
+docker compose logs -f
 ```
 
-### Komendy Laravel
+### 5.2. Uruchamianie i zatrzymywanie
 
 ```bash
-php artisan optimize:clear
-php artisan migrate:fresh --seed
-php artisan tinker
-php artisan queue:work
+# [HOST]
+docker compose up -d
+docker compose up -d --build
+docker compose down
+docker compose down -v
+docker restart cross_app
+```
+
+### 5.3. Kopiowanie plików
+
+```bash
+# [HOST]
+docker cp cross_app:/var/www/storage/logs/laravel.log ./laravel.log
+docker cp ./localfile.txt cross_app:/var/www/localfile.txt
+```
+
+### 5.4. Czyszczenie i porządkowanie
+
+```bash
+# [HOST]
+docker system prune
+docker system prune -a
+docker volume ls
+docker volume rm <nazwa>
 ```
 
 ---
 
-### 🔧 Debugowanie (Telescope / Debugbar)
+## 6. Baza danych i narzędzia
 
-W pliku `.env` możesz włączać lub wyłączać narzędzia debugujące:
+### 6.1. PostgreSQL
 
-```dotenv
-TELESCOPE_ENABLED=false
-DEBUGBAR_ENABLED=true
+```bash
+# [POSTGRES]
+psql -U cross -d cross
 ```
 
--   `TELESCOPE_ENABLED` — włącza/wyłącza Laravel Telescope
--   `DEBUGBAR_ENABLED` — włącza/wyłącza Laravel Debugbar
+```bash
+# [HOST]
+psql -h localhost -p 5432 -U cross -d cross
+```
+
+### 6.2. Redis
+
+```bash
+# [REDIS]
+redis-cli ping
+```
 
 ---
 
-## 🧩 Tech Stack
+## 7. Dev Container w Visual Studio Code
 
-| Technologia                     | Opis                                        |
-| ------------------------------- | ------------------------------------------- |
-| 🐳 **Docker + Docker Compose**  | Konteneryzacja całego środowiska            |
-| ⚙️ **Laravel 12 (PHP 8.3)**     | Framework backendowy                        |
-| 🧰 **Vite + Node 20**           | Bundler frontendowy z HMR                   |
-| 🐘 **PostgreSQL 17**            | Relacyjna baza danych                       |
-| 🟥 **Redis 7 + RedisInsight**   | Cache i kolejki                             |
-| 🔍 **Elasticsearch 8 + Kibana** | Wyszukiwanie pełnotekstowe i analiza danych |
-| 📬 **Mailpit**                  | Testowy serwer SMTP z UI                    |
-| 📊 **pgAdmin**                  | UI do zarządzania PostgreSQL                |
-| 🧑‍💻 **Filament Admin**           | Panel administracyjny dla Laravel           |
-| 🧠 **Laravel Telescope**        | Debugowanie i profilowanie aplikacji        |
+Najważniejsze polecenia dostępne spod **F1** (paleta poleceń VS Code):
+
+-   **Dev Containers: Reopen in Container** – ponowne otwarcie projektu w Dev Containerze.
+-   **Dev Containers: Rebuild and Reopen in Container** – przebudowanie środowiska i ponowne otwarcie projektu w kontenerze.
+-   **Dev Containers: Rebuild Container** – przebudowanie kontenera bez ponownego otwierania projektu.
+-   **Dev Containers: Open Folder in Container...** – ręczne wybranie folderu, który ma być otwarty w kontenerze.
+-   **Dev Containers: Reopen Folder Locally** – wyjście z Dev Containera i otwarcie projektu lokalnie.
+-   **Dev Containers: Close Remote Connection** – zamknięcie aktywnego połączenia z kontenerem.
+-   **Dev Containers: Show Container Log** – wyświetlenie logów uruchamiania kontenera (przydatne w diagnostyce).
+
+---
+
+## 8. Rozwiązywanie problemów (FAQ)
+
+### Błąd: „Brak pliku vendor/autoload.php”
+
+```bash
+# [APP]
+composer install
+```
+
+### Błąd: „APP_KEY is missing”
+
+```bash
+# [APP]
+php artisan key:generate
+```
+
+### Błąd: „Connection refused” przy bazie danych
+
+```bash
+# [HOST]
+docker compose ps
+```
+
+```bash
+# [APP]
+php artisan migrate
+```
+
+---
+
+## 9. Struktura katalogów
+
+```
+cross/
+ ├─ docker/                 # Konfiguracje kontenerów (Dockerfile, ustawienia)
+ ├─ .devcontainer/          # Konfiguracja Dev Container dla VS Code
+ ├─ docker-compose.yml      # Główny plik orkiestracji Docker Compose
+ ├─ app/                    # Kod źródłowy aplikacji Laravel
+ ├─ bootstrap/              # Pliki startowe frameworka
+ ├─ config/                 # Konfiguracje aplikacji
+ ├─ database/               # Migracje, seedy i fabryki danych
+ ├─ public/                 # Katalog publiczny serwera (index.php, assets)
+ ├─ resources/              # Widoki Blade, pliki JS/CSS, komponenty Vite
+ ├─ routes/                 # Definicje tras HTTP
+ ├─ storage/                # Logi, cache, pliki użytkowników
+ ├─ tests/                  # Testy jednostkowe i integracyjne
+ ├─ composer.json           # Zależności PHP
+ ├─ package.json            # Zależności JS
+ └─ README.md               # Dokumentacja projektu
+```
