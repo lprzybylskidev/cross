@@ -1,0 +1,175 @@
+x-pgdb: &pgdb cross
+x-pguser: &pguser cross
+x-pgpass: &pgpass password
+
+services:
+    app:
+        build:
+            context: ./docker
+            dockerfile: php/Dockerfile
+        container_name: cross_app
+        working_dir: /var/www
+        volumes:
+            - ./:/var/www
+        ports:
+            - "8181:80"
+            - "5173:5173"
+        depends_on:
+            - postgres
+            - redis
+            - mailpit
+        healthcheck:
+            test: ["CMD", "curl", "-f", "http://localhost/ || exit 1"]
+            interval: 10s
+            timeout: 5s
+            retries: 10
+
+    postgres:
+        image: postgres:17
+        container_name: cross_postgres
+        environment:
+            POSTGRES_DB: *pgdb
+            POSTGRES_USER: *pguser
+            POSTGRES_PASSWORD: *pgpass
+        ports:
+            - "5432:5432"
+        volumes:
+            - pgdata:/var/lib/postgresql/data
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U cross -d cross || exit 1"]
+            interval: 10s
+            timeout: 5s
+            retries: 10
+
+    pgadmin:
+        image: dpage/pgadmin4:8.12
+        container_name: cross_pgadmin
+        user: "0:0"
+        environment:
+            PGADMIN_DEFAULT_EMAIL: admin@cross.com
+            PGADMIN_DEFAULT_PASSWORD: password
+            PGADMIN_LISTEN_PORT: 5050
+            PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+            PGHOST: postgres
+            PGPORT: "5432"
+            PGUSER: *pguser
+            PGPASSWORD: *pgpass
+            PGDB: *pgdb
+        ports:
+            - "5050:5050"
+        depends_on:
+            - postgres
+        volumes:
+            - pgadmindata:/var/lib/pgadmin
+        entrypoint: /bin/sh
+        command:
+            - -lc
+            - >
+                printf '{"Servers":{"1":{"Name":"Cross (local)","Group":"Servers","Host":"%s","Port":%s,"MaintenanceDB":"%s","Username":"%s","PassFile":"/pgpass","SSLMode":"prefer"}}}'
+                "$$PGHOST" "$$PGPORT" "$$PGDB" "$$PGUSER" > /pgadmin4/servers.json
+                && printf '%s:%s:*:%s:%s\n' "$$PGHOST" "$$PGPORT" "$$PGUSER" "$$PGPASSWORD" > /pgpass
+                && chmod 600 /pgpass
+                && exec /entrypoint.sh
+        healthcheck:
+            test:
+                [
+                    "CMD-SHELL",
+                    "wget -qO- http://localhost:5050/misc/ping >/dev/null 2>&1 || exit 1",
+                ]
+            interval: 15s
+            timeout: 5s
+            retries: 20
+
+    redis:
+        image: redis:7
+        container_name: cross_redis
+        command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+        volumes:
+            - ./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+            - redisdata:/data
+        ports:
+            - "6379:6379"
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 10s
+            timeout: 5s
+            retries: 10
+
+    redisinsight:
+        image: redis/redisinsight:latest
+        container_name: cross_redisinsight
+        restart: always
+        ports:
+            - "5540:5540"
+        depends_on:
+            - redis
+        environment:
+            - RI_ACCEPT_TERMS_AND_CONDITIONS=true
+            - RI_REDIS_HOST=redis
+            - RI_REDIS_PORT=6379
+            - RI_REDIS_ALIAS=Cross Redis
+            - RI_REDIS_USERNAME=cross
+            - RI_REDIS_PASSWORD=password
+            - RI_REDIS_DB=0
+        volumes:
+            - redisinsight:/data
+
+    mailpit:
+        image: axllent/mailpit:latest
+        container_name: cross_mailpit
+        ports:
+            - "8025:8025"
+            - "1025:1025"
+        healthcheck:
+            test: ["CMD", "wget", "-qO-", "http://localhost:8025/healthz"]
+            interval: 10s
+            timeout: 5s
+            retries: 10
+
+    elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:8.15.3
+        container_name: cross_elasticsearch
+        environment:
+            - discovery.type=single-node
+            - xpack.security.enabled=false
+            - ES_JAVA_OPTS=-Xms1g -Xmx1g
+        ports:
+            - "9200:9200"
+        volumes:
+            - esdata:/usr/share/elasticsearch/data
+        healthcheck:
+            test:
+                [
+                    "CMD-SHELL",
+                    "curl -fs http://localhost:9200 >/dev/null || exit 1",
+                ]
+            interval: 15s
+            timeout: 5s
+            retries: 10
+
+    kibana:
+        image: docker.elastic.co/kibana/kibana:8.15.3
+        container_name: cross_kibana
+        environment:
+            - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+            - XPACK_SECURITY_ENABLED=false
+        ports:
+            - "5601:5601"
+        depends_on:
+            - elasticsearch
+        healthcheck:
+            test:
+                [
+                    "CMD-SHELL",
+                    "curl -fs http://localhost:5601/api/status >/dev/null || exit 1",
+                ]
+            interval: 15s
+            timeout: 5s
+            retries: 20
+
+volumes:
+    pgdata:
+    redisdata:
+    esdata:
+    pgadmindata:
+    redisinsight:
