@@ -11,6 +11,7 @@
         - [3.2. Uruchomienie środowiska](#32-uruchomienie-środowiska)
         - [3.3. Konfiguracja Git i klucze SSH](#33-konfiguracja-git-i-klucze-ssh)
         - [3.4. Instalacja zależności i konfiguracja aplikacji](#34-instalacja-zależności-i-konfiguracja-aplikacji)
+        - [3.3.4. Rozwiązywanie problemów z błędem push w VS Code](#334-rozwiązywanie-problemów-z-błędem-push-w-vs-code)
     4. [Często używane komendy Laravel](#4-często-używane-komendy-laravel)
     5. [Przydatne komendy Docker](#5-przydatne-komendy-docker)
     6. [Baza danych i narzędzia](#6-baza-danych-i-narzędzia)
@@ -130,6 +131,33 @@ git config --global user.email "twoj_email@domena.com"
 ```bash
 # [APP]
 git remote set-url origin git@github.com:lprzybylskidev/cross.git
+```
+
+#### 3.3.4. Rozwiązywanie problemów z błędem push w VS Code
+
+Jeżeli podczas próby **push z poziomu VS Code** pojawia się komunikat:
+
+> You don't have permission to push to lprzybylskidev/cross
+
+lub w logu:
+
+> Permission to lprzybylskidev/cross.git denied to lprzybylskidev93
+
+oznacza to, że VS Code forwarduje **SSH-agenta z hosta**, a nie korzysta z klucza SSH wygenerowanego w kontenerze.
+
+Rozwiązanie:
+
+```bash
+# [APP]
+unset SSH_AUTH_SOCK
+git config --global core.sshCommand "ssh -i ~/.ssh/id_ed25519 -o IdentitiesOnly=yes -o IdentityAgent=none"
+ssh -T git@github.com
+```
+
+✅ Poprawny wynik:
+
+```
+Hi {your_name}! You've successfully authenticated, but GitHub does not provide shell access.
 ```
 
 ### 3.4. Instalacja zależności i konfiguracja aplikacji
