@@ -9,6 +9,7 @@
     3. [Instalacja i uruchomienie — krok po kroku](#3-instalacja-i-uruchomienie--krok-po-kroku)
         - [3.1. Klonowanie repozytorium](#31-klonowanie-repozytorium)
         - [3.2. Uruchomienie środowiska](#32-uruchomienie-środowiska)
+        - [3.2.1. Przygotowanie katalogu `storage` i uprawnień](#321-przygotowanie-katalogu-storage-i-uprawnień)
         - [3.3. Konfiguracja Git i klucze SSH](#33-konfiguracja-git-i-klucze-ssh)
         - [3.4. Instalacja zależności i konfiguracja aplikacji](#34-instalacja-zależności-i-konfiguracja-aplikacji)
         - [3.3.4. Rozwiązywanie problemów z błędem push w VS Code](#334-rozwiązywanie-problemów-z-błędem-push-w-vs-code)
@@ -92,6 +93,22 @@ cd cross
 # [HOST]
 docker compose up -d --build
 docker compose ps
+```
+
+### 3.2.1. Przygotowanie katalogu `storage` i uprawnień
+
+```bash
+# [HOST]
+docker exec -it --user root cross_app bash
+mkdir -p /var/www/storage/app \
+         /var/www/storage/framework/cache \
+         /var/www/storage/framework/sessions \
+         /var/www/storage/framework/testing \
+         /var/www/storage/framework/views \
+         /var/www/storage/logs
+chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+chmod -R 775 /var/www/storage /var/www/bootstrap/cache
+exit
 ```
 
 ### 3.3. Konfiguracja Git i klucze SSH
