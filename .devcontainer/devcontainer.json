@@ -37,7 +37,19 @@
                 "editor.wordSeparators": "./\\()\"'-:,.;<>~!@#%^&*|+=[]{}",
                 "blade.format.enable": true,
                 "files.eol": "\n",
-                "terminal.integrated.defaultProfile.linux": "bash"
+                "terminal.integrated.defaultProfile.linux": "bash",
+
+                "css.lint.unknownAtRules": "ignore",
+                "scss.lint.unknownAtRules": "ignore",
+                "less.lint.unknownAtRules": "ignore",
+                "tailwindCSS.emmetCompletions": true,
+                "tailwindCSS.includeLanguages": {
+                    "blade": "html",
+                    "php": "html"
+                },
+                "editor.quickSuggestions": {
+                    "strings": true
+                }
             },
             "extensions": [
                 "bmewburn.vscode-intelephense-client",
