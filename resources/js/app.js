@@ -1,7 +1,7 @@
-import './bootstrap';
+import "./bootstrap";
+import "@tabler/core/dist/js/tabler.js";
 
-import Alpine from 'alpinejs';
-
-window.Alpine = Alpine;
-
-Alpine.start();
+document.addEventListener("DOMContentLoaded", () => {
+    const tiggers = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tiggers.forEach((el) => new window.bootstrap.Tooltip(el));
+});

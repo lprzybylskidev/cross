@@ -1,3 +1,9 @@
+@import "@tabler/core/dist/css/tabler.css";
+@import "@tabler/core/dist/css/tabler-flags.css";
+@import "@tabler/core/dist/css/tabler-payments.css";
+@import "@tabler/core/dist/css/tabler-vendors.css";
+@import "@tabler/icons-webfont/tabler-icons.min.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
