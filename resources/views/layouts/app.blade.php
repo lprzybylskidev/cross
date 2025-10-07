@@ -214,6 +214,20 @@
       <div class="content-wrapper">
         <section class="content p-2">
           <div class="container-fluid">
+            <div class="row">
+              <div class="col">
+                @php
+                  $route = request()->route();
+                  $name = $route?->getName();
+                  $args = $route ? array_values($route->parameters()) : [];
+                @endphp
+
+                @if (empty($hideBreadcrumbs) && $name && \Diglactic\Breadcrumbs\Breadcrumbs::exists($name))
+                  {!! \Diglactic\Breadcrumbs\Breadcrumbs::view("breadcrumbs::adminlte", $name, ...$args) !!}
+                @endif
+              </div>
+            </div>
+
             @yield("content")
           </div>
         </section>
