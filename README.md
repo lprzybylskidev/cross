@@ -42,7 +42,7 @@ Projekt rozwijany jest w oparciu o framework **Laravel**, zapewniając wysoką s
 | **cross_redis**                    | Redis (cache, kolejki, sesje)    | 6379:6379          | —                                                                  | login: `cross`, hasło: `password`              |
 | **cross_mailpit**                  | SMTP + podgląd e-maili           | 8025:8025          | [http://localhost:8025](http://localhost:8025)                     | Brak logowania                                 |
 | **cross_pgadmin**                  | GUI do PostgreSQL                | 5050:5050          | [http://localhost:5050](http://localhost:5050)                     | email: `admin@cross.com`, hasło: `password`    |
-| **cross_redisinsight**             | GUI do Redisa                    | 8081:8081          | [http://localhost:8081](http://localhost:8081)                     | Brak logowania                                 |
+| **cross_redisinsight**             | GUI do Redisa                    | 5540:5540          | [http://localhost:5540](http://localhost:5540)                     | Brak logowania                                 |
 | **cross_elasticsearch**            | Elasticsearch                    | 9200:9200          | —                                                                  | login: `elastic`, hasło: `password`            |
 | **cross_kibana**                   | GUI do Elasticsearch             | 5601:5601          | [http://localhost:5601](http://localhost:5601)                     | Brak logowania                                 |
 
