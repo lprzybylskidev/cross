@@ -1,27 +1,40 @@
-<x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600">
-        {{ __('This is a secure area of the application. Please confirm your password before continuing.') }}
+@extends('layouts.guest')
+
+@section('title', 'Potwierdź hasło')
+
+@section('content')
+<div class="d-flex justify-content-center">
+  <div class="card card-outline card-primary mt-4" style="max-width:480px;width:100%;">
+    <div class="card-header text-center">
+      <h1 class="h5 mb-0">Potwierdź hasło</h1>
     </div>
 
-    <form method="POST" action="{{ route('password.confirm') }}">
+    <div class="card-body">
+      <p class="text-muted mb-4">
+        To jest chroniony obszar aplikacji. Proszę potwierdź swoje hasło przed kontynuowaniem.
+      </p>
+
+      <form method="POST" action="{{ route('password.confirm') }}">
         @csrf
 
-        <!-- Password -->
-        <div>
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        <div class="form-group mb-3">
+          <label for="password">Hasło</label>
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><i class="fas fa-lock"></i></span>
+            </div>
+            <input id="password" type="password" name="password"
+                   class="form-control @error('password') is-invalid @enderror"
+                   required autocomplete="current-password" placeholder="••••••••">
+          </div>
+          @error('password')
+            <div class="invalid-feedback d-block">{{ $message }}</div>
+          @enderror
         </div>
 
-        <div class="flex justify-end mt-4">
-            <x-primary-button>
-                {{ __('Confirm') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+        <button type="submit" class="btn btn-primary w-100">Potwierdź</button>
+      </form>
+    </div>
+  </div>
+</div>
+@endsection

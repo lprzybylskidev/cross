@@ -1,7 +1,13 @@
 import "./bootstrap";
-import "@tabler/core/dist/js/tabler.js";
 
-document.addEventListener("DOMContentLoaded", () => {
-    const tiggers = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-    tiggers.forEach((el) => new window.bootstrap.Tooltip(el));
+import $ from "jquery";
+window.$ = window.jQuery = $;
+
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
+
+import "overlayscrollbars/js/OverlayScrollbars.min.js";
+import "admin-lte/dist/js/adminlte.min.js";
+
+$(function () {
+    $('[data-toggle="tooltip"]').tooltip();
 });

@@ -1,8 +1,7 @@
-@import "@tabler/core/dist/css/tabler.css";
-@import "@tabler/core/dist/css/tabler-flags.css";
-@import "@tabler/core/dist/css/tabler-payments.css";
-@import "@tabler/core/dist/css/tabler-vendors.css";
-@import "@tabler/icons-webfont/tabler-icons.min.css";
+@import "bootstrap/dist/css/bootstrap.min.css";
+@import "overlayscrollbars/css/OverlayScrollbars.min.css";
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+@import "admin-lte/dist/css/adminlte.min.css";
 
 @tailwind base;
 @tailwind components;

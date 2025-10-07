@@ -1,30 +1,95 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>@yield('title', config('app.name', 'Laravel'))</title>
+  @vite(['resources/css/app.css','resources/js/app.js'])
+</head>
+<body class="hold-transition dark-mode">
+<div class="wrapper">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+  <button id="theme-toggle" class="btn btn-outline-secondary btn-sm position-fixed m-3" style="top:0;left:0" title="Zmień motyw">
+    <i id="theme-icon" class="fas fa-moon"></i>
+  </button>
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+  <div class="d-flex align-items-center justify-content-center min-vh-100">
+    <div class="container" style="max-width:520px;">
+      <div class="mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 140 140"
+             fill="currentColor"
+             preserveAspectRatio="xMidYMid meet"
+             class="d-block mx-auto"
+             style="width:250px; height:250px;">
+          <circle cx="70" cy="10" r="7"/>
+          <circle cx="70" cy="130" r="7"/>
+          <circle cx="10" cy="70" r="7"/>
+          <circle cx="130" cy="70" r="7"/>
+          <circle cx="30" cy="30" r="7"/>
+          <circle cx="50" cy="30" r="7"/>
+          <circle cx="30" cy="50" r="7"/>
+          <circle cx="50" cy="50" r="7"/>
+          <circle cx="90" cy="30" r="7"/>
+          <circle cx="110" cy="30" r="7"/>
+          <circle cx="90" cy="50" r="7"/>
+          <circle cx="110" cy="50" r="7"/>
+          <circle cx="30" cy="90" r="7"/>
+          <circle cx="50" cy="90" r="7"/>
+          <circle cx="30" cy="110" r="7"/>
+          <circle cx="50" cy="110" r="7"/>
+          <circle cx="90" cy="90" r="7"/>
+          <circle cx="110" cy="90" r="7"/>
+          <circle cx="90" cy="110" r="7"/>
+          <circle cx="110" cy="110" r="7"/>
+        </svg>
+      </div>
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
-            <div>
-                <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
-                </a>
-            </div>
+      @yield('content')
+    </div>
+  </div>
 
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
-                {{ $slot }}
-            </div>
-        </div>
-    </body>
+  <div class="position-fixed w-100 text-center pb-3" style="bottom:0;">
+    <span>&copy; {{ date('Y') }} {{ config('app.name', 'Laravel') }}</span>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  const key='theme';
+  const body=document.body;
+  const icon=document.getElementById('theme-icon');
+  const mql=window.matchMedia('(prefers-color-scheme: dark)');
+  function setIcon(mode){
+    if(mode==='light') icon.className='fas fa-sun';
+    else if(mode==='system') icon.className='fas fa-circle-half-stroke';
+    else icon.className='fas fa-moon';
+  }
+  function apply(mode){
+    if(mode==='dark') body.classList.add('dark-mode');
+    else if(mode==='light') body.classList.remove('dark-mode');
+    else body.classList.toggle('dark-mode', mql.matches);
+    setIcon(mode);
+  }
+  function cycle(curr){
+    if(curr==='dark') return 'light';
+    if(curr==='light') return 'system';
+    return 'dark';
+  }
+  const saved=localStorage.getItem(key)||'dark';
+  apply(saved);
+  const onSystemChange=()=>{ if((localStorage.getItem(key)||'dark')==='system') apply('system'); };
+  mql.addEventListener ? mql.addEventListener('change', onSystemChange) : mql.addListener(onSystemChange);
+  document.getElementById('theme-toggle').addEventListener('click',e=>{
+    e.preventDefault();
+    const next=cycle(localStorage.getItem(key)||'dark');
+    localStorage.setItem(key,next);
+    apply(next);
+  });
+})();
+</script>
+
+</body>
 </html>
