@@ -4,7 +4,18 @@
     "service": "app",
     "workspaceFolder": "/var/www",
     "remoteUser": "www-data",
-    "forwardPorts": [8181, 5173, 8025, 1025, 5432, 6379],
+
+    "portsAttributes": {
+        "8181": { "label": "App (Nginx)", "onAutoForward": "ignore" },
+        "5173": { "label": "Vite", "onAutoForward": "ignore" },
+        "8025": { "label": "Mailpit", "onAutoForward": "ignore" },
+        "1025": { "label": "Mailpit SMTP", "onAutoForward": "ignore" },
+        "5432": { "label": "Postgres", "onAutoForward": "ignore" },
+        "6379": { "label": "Redis", "onAutoForward": "ignore" }
+    },
+
+    "runServices": ["app", "postgres", "redis", "mailpit"],
+    "shutdownAction": "none",
 
     "customizations": {
         "vscode": {
