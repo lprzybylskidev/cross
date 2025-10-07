@@ -19,68 +19,52 @@
 
     "customizations": {
         "vscode": {
+            "extensions": [
+                "bmewburn.vscode-intelephense-client",
+                "junstyle.php-cs-fixer",
+                "amiralizadeh9480.laravel-extra-intellisense",
+                "codingyu.laravel-goto-view",
+                "onecentlin.laravel-blade",
+                "winnie-lin.laravel-blade-snippets",
+                "winnie-lin.laravel-snippets",
+                "mehedidracula.php-namespace-resolver",
+                "esbenp.prettier-vscode",
+                "bradlc.vscode-tailwindcss",
+                "mikestead.dotenv",
+                "eamodio.gitlens",
+                "Zignd.html-css-class-completion",
+                "thekalinga.bootstrap4-vscode",
+                "ecmel.vscode-html-css",
+                "pranaygp.vscode-css-peek"
+            ],
             "settings": {
                 "editor.formatOnSave": true,
                 "editor.defaultFormatter": "esbenp.prettier-vscode",
 
-                "[javascript]": {
-                    "editor.defaultFormatter": "esbenp.prettier-vscode"
+                "[php]": {
+                    "editor.defaultFormatter": "junstyle.php-cs-fixer",
+                    "editor.formatOnSave": true
                 },
-                "[typescript]": {
-                    "editor.defaultFormatter": "esbenp.prettier-vscode"
-                },
-                "[json]": {
-                    "editor.defaultFormatter": "esbenp.prettier-vscode"
-                },
-                "[jsonc]": {
-                    "editor.defaultFormatter": "esbenp.prettier-vscode"
-                },
-                "[css]": {
-                    "editor.defaultFormatter": "esbenp.prettier-vscode"
-                },
-                "[scss]": {
-                    "editor.defaultFormatter": "esbenp.prettier-vscode"
-                },
-                "[markdown]": {
-                    "editor.defaultFormatter": "esbenp.prettier-vscode"
+
+                "files.associations": {
+                    "**/*.blade.php": "blade"
                 },
 
                 "editor.wordSeparators": "./\\()\"'-:,.;<>~!@#%^&*|+=[]{}",
-                "blade.format.enable": true,
                 "files.eol": "\n",
                 "terminal.integrated.defaultProfile.linux": "bash",
 
                 "css.lint.unknownAtRules": "ignore",
                 "scss.lint.unknownAtRules": "ignore",
                 "less.lint.unknownAtRules": "ignore",
+
                 "tailwindCSS.emmetCompletions": true,
                 "tailwindCSS.includeLanguages": {
                     "blade": "html",
                     "php": "html"
                 },
-                "editor.quickSuggestions": {
-                    "strings": true
-                }
-            },
-            "extensions": [
-                "bmewburn.vscode-intelephense-client",
-                "xdebug.php-debug",
-                "junstyle.php-cs-fixer",
-                "amiralizadeh9480.laravel-extra-intellisense",
-                "codingyu.laravel-goto-view",
-                "ryannaddy.laravel-artisan",
-                "shufo.vscode-blade-formatter",
-                "austenc.laravel-blade-spacer",
-                "onecentlin.laravel5-snippets",
-                "onecentlin.laravel-blade",
-                "cjhowe7.laravel-blade",
-                "mehedidracula.php-namespace-resolver",
-                "esbenp.prettier-vscode",
-                "bradlc.vscode-tailwindcss",
-                "mikestead.dotenv",
-                "eamodio.gitlens",
-                "formulahendry.vscode-redis"
-            ]
+                "editor.quickSuggestions": { "strings": true }
+            }
         }
     },
 

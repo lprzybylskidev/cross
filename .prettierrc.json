@@ -1,0 +1,17 @@
+{
+    "plugins": ["prettier-plugin-blade"],
+    "overrides": [
+        {
+            "files": ["**/*.blade.php"],
+            "options": {
+                "parser": "blade",
+                "tabWidth": 2,
+                "wrapAttributes": "force-aligned",
+                "wrapLineLength": 100,
+                "indentInnerHtml": true,
+                "sortHtmlAttributes": "code",
+                "wrapLineAttributes": false
+            }
+        }
+    ]
+}
