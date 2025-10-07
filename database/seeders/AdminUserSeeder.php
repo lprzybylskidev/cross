@@ -16,6 +16,7 @@ class AdminUserSeeder extends Seeder
             [
                 'name' => 'Cross Admin',
                 'email_verified_at' => now(),
+                'activated_at' => now(),
                 'password' => Hash::make('password'),
             ]
         );

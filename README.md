@@ -34,26 +34,25 @@ Projekt rozwijany jest w oparciu o framework **Laravel**, zapewniając wysoką s
 
 ## 1. Stos technologiczny
 
-| Kontener / Alias                   | Usługa / Cel                     | Port(y)            | Dostęp przez przeglądarkę                                          | Dane logowania / Uwagi                         |
-| ---------------------------------- | -------------------------------- | ------------------ | ------------------------------------------------------------------ | ---------------------------------------------- |
-| **cross_app**                      | Laravel (PHP-FPM + Nginx)        | 8181:80, 5173:5173 | [http://localhost:8181](http://localhost:8181) – aplikacja Laravel | login: `admin@cross.com`, hasło: `password`    |
-| **cross_admin** _(alias logiczny)_ | Panel administracyjny (Filament) | —                  | [http://localhost:8181/admin](http://localhost:8181/admin)         | login: `admin@cross.com`, hasło: `password`    |
-| **cross_postgres**                 | Baza danych PostgreSQL           | 5432:5432          | —                                                                  | login: `cross`, hasło: `password`, db: `cross` |
-| **cross_redis**                    | Redis (cache, kolejki, sesje)    | 6379:6379          | —                                                                  | login: `cross`, hasło: `password`              |
-| **cross_mailpit**                  | SMTP + podgląd e-maili           | 8025:8025          | [http://localhost:8025](http://localhost:8025)                     | Brak logowania                                 |
-| **cross_pgadmin**                  | GUI do PostgreSQL                | 5050:5050          | [http://localhost:5050](http://localhost:5050)                     | email: `admin@cross.com`, hasło: `password`    |
-| **cross_redisinsight**             | GUI do Redisa                    | 5540:5540          | [http://localhost:5540](http://localhost:5540)                     | Brak logowania                                 |
-| **cross_elasticsearch**            | Elasticsearch                    | 9200:9200          | —                                                                  | login: `elastic`, hasło: `password`            |
-| **cross_kibana**                   | GUI do Elasticsearch             | 5601:5601          | [http://localhost:5601](http://localhost:5601)                     | Brak logowania                                 |
+| Kontener / Alias        | Usługa / Cel                  | Port(y)            | Dostęp przez przeglądarkę                                          | Dane logowania / Uwagi                         |
+| ----------------------- | ----------------------------- | ------------------ | ------------------------------------------------------------------ | ---------------------------------------------- |
+| **cross_app**           | Laravel (PHP-FPM + Nginx)     | 8181:80, 5173:5173 | [http://localhost:8181](http://localhost:8181) – aplikacja Laravel | login: `admin@cross.com`, hasło: `password`    |
+| **cross_postgres**      | Baza danych PostgreSQL        | 5432:5432          | —                                                                  | login: `cross`, hasło: `password`, db: `cross` |
+| **cross_redis**         | Redis (cache, kolejki, sesje) | 6379:6379          | —                                                                  | login: `cross`, hasło: `password`              |
+| **cross_mailpit**       | SMTP + podgląd e-maili        | 8025:8025          | [http://localhost:8025](http://localhost:8025)                     | Brak logowania                                 |
+| **cross_pgadmin**       | GUI do PostgreSQL             | 5050:5050          | [http://localhost:5050](http://localhost:5050)                     | email: `admin@cross.com`, hasło: `password`    |
+| **cross_redisinsight**  | GUI do Redisa                 | 5540:5540          | [http://localhost:5540](http://localhost:5540)                     | Brak logowania                                 |
+| **cross_elasticsearch** | Elasticsearch                 | 9200:9200          | —                                                                  | login: `elastic`, hasło: `password`            |
+| **cross_kibana**        | GUI do Elasticsearch          | 5601:5601          | [http://localhost:5601](http://localhost:5601)                     | Brak logowania                                 |
 
 ---
 
 ## 2. Wymagania
 
--   Windows 10/11, macOS lub Linux.
--   Zainstalowany **Docker Desktop** lub Docker + Docker Compose.
--   **Visual Studio Code** (zalecane) z rozszerzeniem _Dev Containers_.
--   Konto GitHub.
+- Windows 10/11, macOS lub Linux.
+- Zainstalowany **Docker Desktop** lub Docker + Docker Compose.
+- **Visual Studio Code** (zalecane) z rozszerzeniem _Dev Containers_.
+- Konto GitHub.
 
 ---
 
@@ -61,10 +60,10 @@ Projekt rozwijany jest w oparciu o framework **Laravel**, zapewniając wysoką s
 
 Poniżej oznaczenia kontekstów wykonywania komend:
 
--   **[HOST]** – komendy uruchamiane w terminalu systemowym (poza kontenerami).
--   **[APP]** – komendy uruchamiane wewnątrz kontenera `cross_app`.  
-    _(Można je wydawać bezpośrednio z terminala w Visual Studio Code po wejściu do Dev Containera.)_
--   **[POSTGRES]**, **[REDIS]**, **[KIBANA]**, **[PGADMIN]**, **[MAILPIT]**, **[REDISINSIGHT]** – komendy dla konkretnych kontenerów.
+- **[HOST]** – komendy uruchamiane w terminalu systemowym (poza kontenerami).
+- **[APP]** – komendy uruchamiane wewnątrz kontenera `cross_app`.  
+  _(Można je wydawać bezpośrednio z terminala w Visual Studio Code po wejściu do Dev Containera.)_
+- **[POSTGRES]**, **[REDIS]**, **[KIBANA]**, **[PGADMIN]**, **[MAILPIT]**, **[REDISINSIGHT]** – komendy dla konkretnych kontenerów.
 
 Wejście do kontenerów (skróty do najczęstszych):
 
@@ -139,7 +138,7 @@ echo ""
 
 ```bash
 # [APP]
-git config --global user.name "Imię Nazwisko"
+git config --global user.name "imie_nazwisko"
 git config --global user.email "twoj_email@domena.com"
 ```
 
@@ -158,7 +157,7 @@ Jeżeli podczas próby **push z poziomu VS Code** pojawia się komunikat:
 
 lub w logu:
 
-> Permission to lprzybylskidev/cross.git denied to lprzybylskidev93
+> Permission to lprzybylskidev/cross.git denied to {your_name}
 
 oznacza to, że VS Code forwarduje **SSH-agenta z hosta**, a nie korzysta z klucza SSH wygenerowanego w kontenerze.
 
@@ -283,13 +282,13 @@ redis-cli ping
 
 Najważniejsze polecenia dostępne spod **F1** (paleta poleceń VS Code):
 
--   **Dev Containers: Reopen in Container** – ponowne otwarcie projektu w Dev Containerze.
--   **Dev Containers: Rebuild and Reopen in Container** – przebudowanie środowiska i ponowne otwarcie projektu w kontenerze.
--   **Dev Containers: Rebuild Container** – przebudowanie kontenera bez ponownego otwierania projektu.
--   **Dev Containers: Open Folder in Container...** – ręczne wybranie folderu, który ma być otwarty w kontenerze.
--   **Dev Containers: Reopen Folder Locally** – wyjście z Dev Containera i otwarcie projektu lokalnie.
--   **Dev Containers: Close Remote Connection** – zamknięcie aktywnego połączenia z kontenerem.
--   **Dev Containers: Show Container Log** – wyświetlenie logów uruchamiania kontenera (przydatne w diagnostyce).
+- **Dev Containers: Reopen in Container** – ponowne otwarcie projektu w Dev Containerze.
+- **Dev Containers: Rebuild and Reopen in Container** – przebudowanie środowiska i ponowne otwarcie projektu w kontenerze.
+- **Dev Containers: Rebuild Container** – przebudowanie kontenera bez ponownego otwierania projektu.
+- **Dev Containers: Open Folder in Container...** – ręczne wybranie folderu, który ma być otwarty w kontenerze.
+- **Dev Containers: Reopen Folder Locally** – wyjście z Dev Containera i otwarcie projektu lokalnie.
+- **Dev Containers: Close Remote Connection** – zamknięcie aktywnego połączenia z kontenerem.
+- **Dev Containers: Show Container Log** – wyświetlenie logów uruchamiania kontenera (przydatne w diagnostyce).
 
 ---
 
